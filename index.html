@@ -11,403 +11,49 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    :root{
-      --bg:#060912; --bg2:#0f172a;
-      --line:rgba(255,255,255,.10); --text:#f8fafc;
-      --muted:#cbd5e1; --soft:#94a3b8;
-      --accent:#8b5cf6; --accent2:#22c55e; --accent3:#38bdf8;
-      --shadow:0 24px 80px rgba(0,0,0,.45);
-    }
-
+    :root{--bg:#060912;--bg2:#0f172a;--line:rgba(255,255,255,.10);--text:#f8fafc;--muted:#cbd5e1;--soft:#94a3b8;--accent:#8b5cf6;--accent2:#22c55e;--accent3:#38bdf8;--shadow:0 24px 80px rgba(0,0,0,.45)}
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at 10% 10%, rgba(139,92,246,.25), transparent 18%),
-        radial-gradient(circle at 90% 12%, rgba(56,189,248,.14), transparent 16%),
-        radial-gradient(circle at 50% 100%, rgba(34,197,94,.12), transparent 20%),
-        linear-gradient(135deg,var(--bg),var(--bg2));
-      min-height:100vh;
-      padding:16px 16px 92px;
-      overflow-x:hidden;
-    }
-
+    body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at 10% 10%, rgba(139,92,246,.25), transparent 18%),radial-gradient(circle at 90% 12%, rgba(56,189,248,.14), transparent 16%),radial-gradient(circle at 50% 100%, rgba(34,197,94,.12), transparent 20%),linear-gradient(135deg,var(--bg),var(--bg2));min-height:100vh;padding:16px 16px 92px;overflow-x:hidden}
     .shell{width:min(1040px,100%);margin:0 auto}
-
-    .hero{
-      position:relative;
-      overflow:hidden;
-      border:1px solid var(--line);
-      border-radius:36px;
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(18px);
-      animation:rise .7s cubic-bezier(.2,.8,.2,1) both;
-    }
-
+    .hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:36px;background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));box-shadow:var(--shadow);backdrop-filter:blur(18px);animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
     .inner{padding:20px}
-
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:18px;
-    }
-
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.06);
-      color:var(--muted);
-      font-size:14px;
-      transition:transform .25s ease, background .25s ease;
-      animation:fadeUp .7s both;
-    }
-
+    .topbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+    .chip{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--muted);font-size:14px;transition:transform .25s ease, background .25s ease;animation:fadeUp .7s both}
     .chip:hover{transform:translateY(-1px)}
-    .dot{
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      background:linear-gradient(135deg,var(--accent3),var(--accent2));
-      box-shadow:0 0 18px rgba(56,189,248,.55)
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:1.15fr .85fr;
-      gap:18px;
-      align-items:start;
-    }
-
-    @media (max-width:900px){
-      .grid{grid-template-columns:1fr}
-    }
-
-    .panel{
-      border:1px solid var(--line);
-      border-radius:32px;
-      background:rgba(0,0,0,.14);
-      animation:fadeUp .8s both;
-      will-change:transform,opacity;
-    }
-
-    .left{padding:24px}
-    .right{padding:18px;display:grid;gap:14px}
-
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      color:#ddd6fe;
-      background:rgba(139,92,246,.12);
-      border:1px solid rgba(139,92,246,.24);
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:13px;
-      margin-bottom:16px;
-      width:fit-content
-    }
-
-    h1{
-      margin:0 0 14px;
-      font-size:clamp(30px,5.2vw,64px);
-      line-height:1;
-      letter-spacing:-.05em;
-      animation:fadeUp .85s both
-    }
-
-    .lead{
-      margin:0 0 16px;
-      font-size:clamp(16px,2vw,19px);
-      line-height:1.65;
-      color:var(--muted);
-      max-width:44ch;
-      animation:fadeUp .85s both
-    }
-
-    .mapCard{
-      padding:16px;
-      border-radius:24px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      display:grid;
-      gap:12px;
-      margin-top:18px;
-      animation:fadeUp .9s both;
-      position:relative;
-    }
-
-    .mapHead{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap
-    }
-
-    .mapTitle{font-weight:800}
-    .mapSub{color:var(--soft);font-size:13px}
-    .mapFrame{
-      width:100%;
-      min-height:320px;
-      height:clamp(320px,42vw,460px);
-      border-radius:18px;
-      overflow:hidden;
-      transform:translateZ(0)
-    }
-
-    .supportHead{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap
-    }
-
-    .supportHead h2{margin:0;font-size:20px}
-    .supportHead span{color:var(--soft);font-size:13px}
-
-    .supportCard{
-      padding:16px;
-      border-radius:24px;
-      border:1px solid rgba(34,197,94,.22);
-      background:linear-gradient(180deg, rgba(34,197,94,.10), rgba(255,255,255,.04));
-      display:grid;
-      gap:10px
-    }
-
-    .phone{
-      font-size:clamp(24px,4vw,30px);
-      font-weight:900;
-      letter-spacing:.2px;
-      line-height:1.1;
-      word-break:break-word
-    }
-
-    .bank{color:var(--muted)}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-
-    button.copy,a.social,.sticky a{
-      appearance:none;
-      border:none;
-      cursor:pointer;
-      text-decoration:none;
-      color:var(--text);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      min-height:48px;
-      padding:0 16px;
-      border-radius:16px;
-      background:rgba(255,255,255,.08);
-      border:1px solid var(--line);
-      transition:transform .18s ease,background .18s ease,border-color .18s ease,opacity .18s ease;
-      font-weight:800
-    }
-
+    .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--accent3),var(--accent2));box-shadow:0 0 18px rgba(56,189,248,.55)}
+    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    .panel{border:1px solid var(--line);border-radius:32px;background:rgba(0,0,0,.14);animation:fadeUp .8s both;will-change:transform,opacity}
+    .left{padding:24px}.right{padding:18px;display:grid;gap:14px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;color:#ddd6fe;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.24);padding:8px 12px;border-radius:999px;font-size:13px;margin-bottom:16px;width:fit-content}
+    h1{margin:0 0 14px;font-size:clamp(30px,5.2vw,64px);line-height:1;letter-spacing:-.05em;animation:fadeUp .85s both}
+    .lead{margin:0 0 16px;font-size:clamp(16px,2vw,19px);line-height:1.65;color:var(--muted);max-width:44ch;animation:fadeUp .85s both}
+    .mapCard{padding:16px;border-radius:24px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:grid;gap:12px;margin-top:18px;animation:fadeUp .9s both;position:relative}
+    .mapHead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .mapTitle{font-weight:800}.mapSub{color:var(--soft);font-size:13px}
+    .mapFrame{width:100%;min-height:320px;height:clamp(320px,42vw,460px);border-radius:18px;overflow:hidden;transform:translateZ(0);touch-action:none}
+    .supportHead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .supportHead h2{margin:0;font-size:20px}.supportHead span{color:var(--soft);font-size:13px}
+    .supportCard{padding:16px;border-radius:24px;border:1px solid rgba(34,197,94,.22);background:linear-gradient(180deg, rgba(34,197,94,.10), rgba(255,255,255,.04));display:grid;gap:10px}
+    .phone{font-size:clamp(24px,4vw,30px);font-weight:900;letter-spacing:.2px;line-height:1.1;word-break:break-word}.bank{color:var(--muted)}.row{display:flex;gap:10px;flex-wrap:wrap}
+    button.copy,a.social,.sticky a{appearance:none;border:none;cursor:pointer;text-decoration:none;color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 16px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid var(--line);transition:transform .18s ease,background .18s ease,border-color .18s ease,opacity .18s ease;font-weight:800}
     button.copy:hover,a.social:hover,.sticky a:hover{transform:translateY(-1px);background:rgba(255,255,255,.12)}
     .copyFull{width:100%}
-
-    .socials{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px
-    }
-
-    @media (max-width:560px){
-      .socials{grid-template-columns:1fr}
-    }
-
-    a.social{
-      min-height:66px;
-      justify-content:space-between;
-      padding:16px;
-      border-radius:20px
-    }
-
-    .social .name{font-weight:900}
-    .social .desc{color:var(--soft);font-size:13px;margin-top:2px;font-weight:500}
-    .social .arrow{color:#c4b5fd;font-size:20px}
-
-    .progress{
-      padding:16px;
-      border-radius:22px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      display:grid;
-      gap:10px
-    }
-
-    .progressTop{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap
-    }
-
-    .progressTop .label{font-weight:800}
-    .progressTop .value{color:var(--muted);font-size:14px}
-
-    .bar{
-      width:100%;
-      height:12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.08);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.08)
-    }
-
-    .bar>i{
-      display:block;
-      height:100%;
-      width:48%;
-      border-radius:999px;
-      background:linear-gradient(90deg,var(--accent),var(--accent3),var(--accent2));
-      transition:width .35s ease
-    }
-
-    .sticky{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:12px;
-      width:min(1040px,calc(100% - 24px));
-      margin:0 auto;
-      display:flex;
-      gap:10px;
-      padding:10px;
-      border-radius:22px;
-      background:rgba(7,11,20,.76);
-      border:1px solid var(--line);
-      backdrop-filter:blur(16px);
-      box-shadow:0 10px 35px rgba(0,0,0,.35);
-      z-index:20;
-      animation:fadeUp .8s both;
-      transition:transform .28s ease,opacity .28s ease;
-      will-change:transform,opacity;
-      justify-content:center
-    }
-
-    .sticky a{
-      flex:1 1 0;
-      min-width:0;
-      min-height:48px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:16px;
-      font-weight:900
-    }
-
-    .sticky .primary{background:linear-gradient(135deg,var(--accent),var(--accent3));border-color:transparent}
-    .sticky .donat{background:rgba(255,255,255,.06)}
-
-    .sticky.is-hidden{
-      transform:translateY(120%);
-      opacity:0;
-      pointer-events:none
-    }
-
-    .mapWrapFull{
-      position:fixed !important;
-      inset:0 !important;
-      z-index:9999 !important;
-      width:100vw !important;
-      height:100vh !important;
-      border-radius:0 !important;
-      margin:0 !important;
-      padding:0 !important;
-      background:#060912
-    }
-
-    .mapWrapFull .mapFrame{
-      width:100% !important;
-      height:100vh !important;
-      min-height:100vh !important;
-      border-radius:0 !important
-    }
-
-    .mapClose{
-      position:absolute;
-      top:16px;
-      right:16px;
-      z-index:10000;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      min-width:44px;
-      height:44px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:rgba(7,11,20,.82);
-      color:var(--text);
-      font-size:18px;
-      font-weight:900;
-      backdrop-filter:blur(14px);
-      cursor:pointer
-    }
-
-    .mapWrapFull .mapClose{display:flex}
-
-    .hint{
-      position:absolute;
-      left:16px;
-      top:16px;
-      z-index:10000;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(7,11,20,.76);
-      border:1px solid var(--line);
-      color:var(--muted);
-      font-size:12px;
-      backdrop-filter:blur(14px);
-      display:none
-    }
-
-    .mapWrapFull .hint{display:block}
-
-    .glow{
-      position:absolute;
-      right:-120px;
-      bottom:-140px;
-      width:340px;
-      height:340px;
-      border-radius:50%;
-      background:radial-gradient(circle, rgba(124,58,237,.24), transparent 65%);
-      pointer-events:none;
-      animation:pulse 7s ease-in-out infinite
-    }
-
-    .mapClose:active{transform:scale(.98)}
-
-    @keyframes fadeUp{
-      from{opacity:0;transform:translateY(14px)}
-      to{opacity:1;transform:translateY(0)}
-    }
-
-    @keyframes rise{
-      from{opacity:0;transform:translateY(18px) scale(.985)}
-      to{opacity:1;transform:translateY(0) scale(1)}
-    }
-
-    @keyframes pulse{
-      0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.85}
-      50%{transform:translate3d(-10px,-8px,0) scale(1.06);opacity:1}
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      *{animation:none !important;transition:none !important;scroll-behavior:auto !important}
-    }
+    .socials{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media (max-width:560px){.socials{grid-template-columns:1fr}}
+    a.social{min-height:66px;justify-content:space-between;padding:16px;border-radius:20px}
+    .social .name{font-weight:900}.social .desc{color:var(--soft);font-size:13px;margin-top:2px;font-weight:500}.social .arrow{color:#c4b5fd;font-size:20px}
+    .progress{padding:16px;border-radius:22px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:grid;gap:10px}
+    .progressTop{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.progressTop .label{font-weight:800}.progressTop .value{color:var(--muted);font-size:14px}
+    .bar{width:100%;height:12px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+    .bar>i{display:block;height:100%;width:48%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent3),var(--accent2));transition:width .35s ease}
+    .sticky{position:fixed;left:0;right:0;bottom:12px;width:min(1040px,calc(100% - 24px));margin:0 auto;display:flex;gap:10px;padding:10px;border-radius:22px;background:rgba(7,11,20,.76);border:1px solid var(--line);backdrop-filter:blur(16px);box-shadow:0 10px 35px rgba(0,0,0,.35);z-index:20;animation:fadeUp .8s both;transition:transform .28s ease,opacity .28s ease;will-change:transform,opacity;justify-content:center}.sticky a{flex:1 1 0;min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;border-radius:16px;font-weight:900}.sticky .primary{background:linear-gradient(135deg,var(--accent),var(--accent3));border-color:transparent}.sticky .donat{background:rgba(255,255,255,.06)}.sticky.is-hidden{transform:translateY(120%);opacity:0;pointer-events:none}
+    .mapWrapFull{position:fixed !important;inset:0 !important;z-index:9999 !important;width:100vw !important;height:100vh !important;border-radius:0 !important;margin:0 !important;padding:0 !important;background:#060912}.mapWrapFull .mapFrame{width:100% !important;height:100vh !important;min-height:100vh !important;border-radius:0 !important}
+    .mapClose{position:absolute;top:16px;right:16px;z-index:10000;display:none;align-items:center;justify-content:center;min-width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:rgba(7,11,20,.82);color:var(--text);font-size:18px;font-weight:900;backdrop-filter:blur(14px);cursor:pointer}.mapWrapFull .mapClose{display:flex}
+    .hint{position:absolute;left:16px;top:16px;z-index:10000;padding:8px 12px;border-radius:999px;background:rgba(7,11,20,.76);border:1px solid var(--line);color:var(--muted);font-size:12px;backdrop-filter:blur(14px);display:none}.mapWrapFull .hint{display:block}
+    .glow{position:absolute;right:-120px;bottom:-140px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle, rgba(124,58,237,.24), transparent 65%);pointer-events:none;animation:pulse 7s ease-in-out infinite}.mapClose:active{transform:scale(.98)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes pulse{0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.85}50%{transform:translate3d(-10px,-8px,0) scale(1.06);opacity:1}}
+    @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;scroll-behavior:auto !important}}
   </style>
 </head>
 <body>
@@ -419,14 +65,12 @@
           <div class="chip"><span class="dot"></span> Путь, видео и живая история каждый день</div>
           <div class="chip" id="routeChip"></div>
         </div>
-
         <div class="grid">
           <section class="panel left">
             <div class="eyebrow">Идущий в закат.</div>
             <h1 id="title"></h1>
             <p class="lead" id="intro1"></p>
             <p class="lead" id="intro2"></p>
-
             <div class="mapCard" id="mapCard">
               <div class="mapHead">
                 <div class="mapTitle">Карта пути</div>
@@ -439,30 +83,18 @@
               </div>
             </div>
           </section>
-
           <aside class="panel right">
-            <div class="supportHead">
-              <h2>Поддержать приключение</h2>
-              <span>Быстро и удобно с телефона</span>
-            </div>
-
+            <div class="supportHead"><h2>Поддержать приключение</h2><span>Быстро и удобно с телефона</span></div>
             <div class="supportCard" id="supportBlock">
               <div class="phone" id="phone"></div>
               <div class="bank" id="bank"></div>
-              <div class="row">
-                <button class="copy copyFull" id="copyBtn" type="button">Скопировать номер</button>
-              </div>
+              <div class="row"><button class="copy copyFull" id="copyBtn" type="button">Скопировать номер</button></div>
             </div>
-
             <div class="progress">
-              <div class="progressTop">
-                <div class="label">Прогресс пути</div>
-                <div class="value" id="progressText"></div>
-              </div>
+              <div class="progressTop"><div class="label">Прогресс пути</div><div class="value" id="progressText"></div></div>
               <div class="bar"><i id="progressFill"></i></div>
               <div class="value" id="progressNote"></div>
             </div>
-
             <div class="socials">
               <a class="social wide" id="tg" href="#" target="_blank" rel="noopener noreferrer"><div><div class="name">Telegram</div><div class="desc">Канал и связь</div></div><div class="arrow">↗</div></a>
               <a class="social" id="ig" href="#" target="_blank" rel="noopener noreferrer"><div><div class="name">Инста</div><div class="desc">Сторис и фото</div></div><div class="arrow">↗</div></a>
@@ -491,13 +123,13 @@
       intro1: 'Меня зовут Максим, и я решил пройти этот путь своими ногами. Подписывайся на мои соцсети — посмотришь на это сумасшествие в режиме сериала.',
       intro2: 'Если тебе заходит этот формат и хочется поддержать авантюру, ниже есть номер для перевода и кнопки соцсетей.',
       route: 'Новосибирск → Сочи',
-      progressWalked: 400,
+      progressWalked: 360,
       progressTotal: 4500,
       progressNote: 'Почти размял ноги!',
       mapSub: 'Текущая точка автоматически берется из данных ниже',
-      currentLat: 55.306698,
-      currentLng: 76.754689,
-      currentPlace: 'посёлок Чаны',
+      currentLat: 55.312079,
+      currentLng: 77.131557,
+      currentPlace: 'рядом с аулом Кошкуль',
       mapZoom: 6,
       mapUrlLabel: 'Где сейчас:',
       instagram: 'https://www.instagram.com/max_with.axe?igsh=bzR3ZjUxeHVjM3o2',
@@ -592,9 +224,7 @@
     document.getElementById('mapClose').addEventListener('click', toggleFullscreen);
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && mapCard.classList.contains('mapWrapFull')) {
-        toggleFullscreen();
-      }
+      if (e.key === 'Escape' && mapCard.classList.contains('mapWrapFull')) toggleFullscreen();
     });
 
     document.addEventListener('fullscreenchange', () => {
@@ -662,6 +292,7 @@
     function updateStickyVisibility(){
       const currentScrollY = window.scrollY;
       const delta = currentScrollY - lastScrollY;
+
       if (currentScrollY < 80){
         sticky.classList.remove('is-hidden');
         hidden = false;
@@ -672,6 +303,7 @@
         sticky.classList.remove('is-hidden');
         hidden = false;
       }
+
       lastScrollY = currentScrollY;
       ticking = false;
     }
