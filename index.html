@@ -32,7 +32,7 @@
     .mapCard{padding:16px;border-radius:24px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:grid;gap:12px;margin-top:18px;animation:fadeUp .9s both;position:relative}
     .mapHead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
     .mapTitle{font-weight:800}.mapSub{color:var(--soft);font-size:13px}
-    .mapFrame{width:100%;min-height:320px;height:clamp(320px,42vw,460px);border-radius:18px;overflow:hidden;transform:translateZ(0);touch-action:none}
+    .mapFrame{width:100%;min-height:320px;height:clamp(320px,42vw,460px);border-radius:18px;overflow:hidden;transform:translateZ(0)}
     .supportHead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
     .supportHead h2{margin:0;font-size:20px}.supportHead span{color:var(--soft);font-size:13px}
     .supportCard{padding:16px;border-radius:24px;border:1px solid rgba(34,197,94,.22);background:linear-gradient(180deg, rgba(34,197,94,.10), rgba(255,255,255,.04));display:grid;gap:10px}
@@ -122,14 +122,13 @@
       intro1: 'Меня зовут Максим, и я решил пройти этот путь своими ногами. Подписывайся на мои соцсети — посмотришь на это сумасшествие в режиме сериала.',
       intro2: 'Если тебе заходит этот формат и хочется поддержать авантюру, ниже есть номер для перевода и кнопки соцсетей.',
       route: 'Новосибирск → Сочи',
-      progressWalked: 500,
+      progressWalked: 600,
       progressTotal: 4500,
       progressNote: 'Размял ноги!',
-      currentLat: 55.154644,
-      currentLng: 75.709451,
-      currentPlace: 'ночую где-то в поле',
+      currentCoords: '55.111091, 75.229853',
+      currentPlace: 'В Омской области! Ура!',
       mapZoom: 7,
-      mapUrlLabel: 'Где сейчас:',
+      mapUrlLabel: 'Сейчас я:',
       instagram: 'https://www.instagram.com/max_with.axe?igsh=bzR3ZjUxeHVjM3o2',
       max: 'https://max.ru/join/-mFm-zJv_NyvI00oZNuhqrVzyemBKFloo9gY_Mk6cU8',
       youtube: 'https://youtube.com/@kotikilapkami?si=5LbQ4_q9oEJFHt6m',
@@ -142,6 +141,17 @@
       if (el) el.textContent = value;
     };
 
+    function parseCoords(input){
+      const parts = String(input).split(',').map(s => s.trim()).filter(Boolean);
+      if (parts.length !== 2) return null;
+      const lat = Number(parts[0]);
+      const lng = Number(parts[1]);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+      return { lat, lng };
+    }
+
+    const coords = parseCoords(data.currentCoords) || { lat: 55.154644, lng: 75.709451 };
+
     setText('phone', data.phone);
     setText('bank', data.bank);
     setText('title', data.title);
@@ -153,7 +163,7 @@
     setText('progressText', `${data.progressWalked} км / ${data.progressTotal} км`);
     document.getElementById('progressFill').style.width = percent + '%';
     setText('progressNote', data.progressNote);
-    setText('mapSub', `${data.mapUrlLabel}: ${data.currentPlace} · ${data.currentLat.toFixed(5)}, ${data.currentLng.toFixed(5)}`);
+    setText('mapSub', `${data.mapUrlLabel}: ${data.currentPlace} · ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`);
 
     document.getElementById('ig').href = data.instagram;
     document.getElementById('max').href = data.max;
@@ -167,8 +177,19 @@
       scrollWheelZoom: false,
       doubleClickZoom: false,
       zoomControl: true,
-      attributionControl: false
-    }).setView([data.currentLat, data.currentLng], data.mapZoom);
+      attributionControl: false,
+      tap: false,
+      touchZoom: true,
+      boxZoom: false,
+      keyboard: true,
+      dragging: true,
+      zoomAnimation: true,
+      markerZoomAnimation: true,
+      inertia: true,
+      worldCopyJump: false,
+      closePopupOnClick: false,
+      trackResize: false
+    }).setView([coords.lat, coords.lng], data.mapZoom);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -176,7 +197,7 @@
       crossOrigin: true
     }).addTo(map);
 
-    const marker = L.marker([data.currentLat, data.currentLng]).addTo(map).bindPopup(data.currentPlace);
+    const marker = L.marker([coords.lat, coords.lng]).addTo(map).bindPopup(data.currentPlace);
     marker.openPopup();
 
     function resizeMap(){
@@ -201,7 +222,10 @@
           mapCard.requestFullscreen().catch(() => {});
         }
       }
-      setTimeout(resizeMap, 120);
+      setTimeout(() => {
+        resizeMap();
+        setTimeout(resizeMap, 120);
+      }, 50);
     }
 
     mapCard.addEventListener('dblclick', (e) => {
@@ -229,22 +253,31 @@
       if (!document.fullscreenElement && mapCard.classList.contains('mapWrapFull')) {
         mapCard.classList.remove('mapWrapFull');
         document.body.style.overflow = '';
-        setTimeout(resizeMap, 120);
+        setTimeout(() => {
+          resizeMap();
+          setTimeout(resizeMap, 120);
+        }, 50);
       }
     });
 
-    function setMapPoint(lat, lng, place){
-      data.currentLat = lat;
-      data.currentLng = lng;
+    function setMapPoint(coordsString, place){
+      const c = parseCoords(coordsString);
+      if (!c) return false;
+      data.currentCoords = coordsString;
       data.currentPlace = place;
-      marker.setLatLng([lat, lng]);
+      marker.setLatLng([c.lat, c.lng]);
       marker.setPopupContent(place);
-      map.setView([lat, lng], data.mapZoom, { animate:true });
-      setText('mapSub', `${data.mapUrlLabel}: ${place} · ${lat.toFixed(5)}, ${lng.toFixed(5)}`);
-      setTimeout(resizeMap, 120);
+      map.setView([c.lat, c.lng], data.mapZoom, { animate:true });
+      setText('mapSub', `${data.mapUrlLabel}: ${place} · ${c.lat.toFixed(5)}, ${c.lng.toFixed(5)}`);
+      setTimeout(() => {
+        resizeMap();
+        setTimeout(resizeMap, 120);
+      }, 50);
+      return true;
     }
 
     window.setMapPoint = setMapPoint;
+    window.setMapPointFromString = (coordsString, place) => setMapPoint(coordsString, place);
 
     async function copyPhone(){
       const text = data.tel;
