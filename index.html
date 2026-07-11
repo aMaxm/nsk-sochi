@@ -11,95 +11,337 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    :root{--bg:#060912;--bg2:#0f172a;--line:rgba(255,255,255,.10);--text:#f8fafc;--muted:#cbd5e1;--soft:#94a3b8;--accent:#8b5cf6;--accent2:#22c55e;--accent3:#38bdf8;--shadow:0 24px 80px rgba(0,0,0,.45)}
+    :root{
+      --bg:#060912;
+      --bg2:#0f172a;
+      --line:rgba(255,255,255,.10);
+      --text:#f8fafc;
+      --muted:#cbd5e1;
+      --soft:#94a3b8;
+      --accent:#8b5cf6;
+      --accent2:#22c55e;
+      --accent3:#38bdf8;
+      --shadow:0 24px 80px rgba(0,0,0,.45)
+    }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at 10% 10%, rgba(139,92,246,.25), transparent 18%),radial-gradient(circle at 90% 12%, rgba(56,189,248,.14), transparent 16%),radial-gradient(circle at 50% 100%, rgba(34,197,94,.12), transparent 20%),linear-gradient(135deg,var(--bg),var(--bg2));min-height:100vh;padding:16px 16px 92px;overflow-x:hidden}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(139,92,246,.25), transparent 18%),
+        radial-gradient(circle at 90% 12%, rgba(56,189,248,.14), transparent 16%),
+        radial-gradient(circle at 50% 100%, rgba(34,197,94,.12), transparent 20%),
+        linear-gradient(135deg,var(--bg),var(--bg2));
+      min-height:100vh;
+      padding:16px 16px 92px;
+      overflow-x:hidden;
+    }
     .shell{width:min(1040px,100%);margin:0 auto}
-    .hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:36px;background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));box-shadow:var(--shadow);backdrop-filter:blur(18px);animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
-    .inner{padding:20px}
-    .topbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:18px}
-    .chip{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--muted);font-size:14px;transition:transform .25s ease, background .25s ease;animation:fadeUp .7s both}
-    .chip:hover{transform:translateY(-1px)}
-    .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--accent3),var(--accent2));box-shadow:0 0 18px rgba(56,189,248,.55)}
-    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start}
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      box-shadow:var(--shadow);
+    }
+    .inner{padding:16px}
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:14px
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:13px
+    }
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--accent3),var(--accent2));
+      box-shadow:0 0 18px rgba(56,189,248,.55)
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:14px;
+      align-items:start
+    }
     @media (max-width:900px){.grid{grid-template-columns:1fr}}
-    .panel{border:1px solid var(--line);border-radius:32px;background:rgba(0,0,0,.14);animation:fadeUp .8s both;will-change:transform,opacity}
-    .left{padding:24px}.right{padding:18px;display:grid;gap:14px}
-    .eyebrow{display:inline-flex;align-items:center;gap:8px;color:#ddd6fe;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.24);padding:8px 12px;border-radius:999px;font-size:13px;margin-bottom:16px;width:fit-content}
-    h1{margin:0 0 14px;font-size:clamp(30px,5.2vw,64px);line-height:1;letter-spacing:-.05em;animation:fadeUp .85s both}
-    .lead{margin:0 0 16px;font-size:clamp(16px,2vw,19px);line-height:1.65;color:var(--muted);max-width:44ch;animation:fadeUp .85s both}
-    .mapCard{padding:16px;border-radius:24px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:grid;gap:12px;margin-top:18px;animation:fadeUp .9s both;position:relative}
-    .mapHead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    .mapTitle{font-weight:800}.mapSub{color:var(--soft);font-size:13px}
-    .mapFrame{width:100%;min-height:320px;height:clamp(320px,42vw,460px);border-radius:18px;overflow:hidden;transform:translateZ(0)}
-    .supportHead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-    .supportHead h2{margin:0;font-size:20px}.supportHead span{color:var(--soft);font-size:13px}
-    .supportCard{padding:16px;border-radius:24px;border:1px solid rgba(34,197,94,.22);background:linear-gradient(180deg, rgba(34,197,94,.10), rgba(255,255,255,.04));display:grid;gap:10px}
-    .phone{font-size:clamp(24px,4vw,30px);font-weight:900;letter-spacing:.2px;line-height:1.1;word-break:break-word}.bank{color:var(--muted)}.row{display:flex;gap:10px;flex-wrap:wrap}
-    button.copy,a.social,.sticky a{appearance:none;border:none;cursor:pointer;text-decoration:none;color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 16px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid var(--line);transition:transform .18s ease,background .18s ease,border-color .18s ease,opacity .18s ease;font-weight:800}
-    button.copy:hover,a.social:hover,.sticky a:hover{transform:translateY(-1px);background:rgba(255,255,255,.12)}
+    .panel{
+      border:1px solid var(--line);
+      border-radius:24px;
+      background:rgba(0,0,0,.14)
+    }
+    .left{padding:18px}
+    .right{padding:14px;display:grid;gap:12px}
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:#ddd6fe;
+      background:rgba(139,92,246,.12);
+      border:1px solid rgba(139,92,246,.24);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:13px;
+      margin-bottom:14px;
+      width:fit-content
+    }
+    h1{
+      margin:0 0 12px;
+      font-size:clamp(28px,5vw,58px);
+      line-height:1.02;
+      letter-spacing:-.05em
+    }
+    .lead{
+      margin:0 0 12px;
+      font-size:clamp(15px,1.9vw,18px);
+      line-height:1.6;
+      color:var(--muted);
+      max-width:44ch
+    }
+    .mapCard{
+      padding:12px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      display:grid;
+      gap:10px;
+      margin-top:14px
+    }
+    .mapHead{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap
+    }
+    .mapTitle{font-weight:800}
+    .mapSub{color:var(--soft);font-size:12px}
+    .mapFrame{
+      width:100%;
+      min-height:260px;
+      height:clamp(260px,38vw,380px);
+      border-radius:14px;
+      overflow:hidden;
+      transform:translateZ(0)
+    }
+    .supportHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap
+    }
+    .supportHead h2{margin:0;font-size:18px}
+    .supportHead span{color:var(--soft);font-size:12px}
+    .supportCard{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(34,197,94,.22);
+      background:linear-gradient(180deg, rgba(34,197,94,.10), rgba(255,255,255,.04));
+      display:grid;
+      gap:10px
+    }
+    .phone{
+      font-size:clamp(22px,3.5vw,28px);
+      font-weight:900;
+      letter-spacing:.2px;
+      line-height:1.1;
+      word-break:break-word
+    }
+    .bank{color:var(--muted)}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    button.copy,a.social,.sticky a{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      text-decoration:none;
+      color:var(--text);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      min-height:46px;
+      padding:0 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--line);
+      transition:background .16s ease,transform .16s ease;
+      font-weight:800
+    }
+    button.copy:hover,a.social:hover,.sticky a:hover{
+      transform:translateY(-1px);
+      background:rgba(255,255,255,.12)
+    }
     .copyFull{width:100%}
-    .socials{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media (max-width:560px){.socials{grid-template-columns:1fr}}
-    a.social{min-height:66px;justify-content:space-between;padding:16px;border-radius:20px}
-    .social .name{font-weight:900}.social .desc{color:var(--soft);font-size:13px;margin-top:2px;font-weight:500}.social .arrow{color:#c4b5fd;font-size:20px}
-    .progress{padding:16px;border-radius:22px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:grid;gap:10px}
-    .progressTop{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.progressTop .label{font-weight:800}.progressTop .value{color:var(--muted);font-size:14px}
-    .bar{width:100%;height:12px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid rgba(255,255,255,.08)}
-    .bar>i{display:block;height:100%;width:48%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent3),var(--accent2));transition:width .35s ease}
-    .sticky{position:fixed;left:0;right:0;bottom:12px;width:min(1040px,calc(100% - 24px));margin:0 auto;display:flex;gap:10px;padding:10px;border-radius:22px;background:rgba(7,11,20,.76);border:1px solid var(--line);backdrop-filter:blur(16px);box-shadow:0 10px 35px rgba(0,0,0,.35);z-index:20;animation:fadeUp .8s both;transition:transform .28s ease,opacity .28s ease;will-change:transform,opacity;justify-content:center}.sticky a{flex:1 1 0;min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;border-radius:16px;font-weight:900}.sticky .primary{background:linear-gradient(135deg,var(--accent),var(--accent3));border-color:transparent}.sticky .donat{background:rgba(255,255,255,.06)}.sticky.is-hidden{transform:translateY(120%);opacity:0;pointer-events:none}
-    .mapWrapFull{position:fixed !important;inset:0 !important;z-index:9999 !important;width:100vw !important;height:100vh !important;border-radius:0 !important;margin:0 !important;padding:0 !important;background:#060912}.mapWrapFull .mapFrame{width:100% !important;height:100vh !important;min-height:100vh !important;border-radius:0 !important}
-    .mapClose{position:absolute;top:16px;right:16px;z-index:10000;display:none;align-items:center;justify-content:center;min-width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:rgba(7,11,20,.82);color:var(--text);font-size:18px;font-weight:900;backdrop-filter:blur(14px);cursor:pointer}.mapWrapFull .mapClose{display:flex}
-    .hint{position:absolute;left:16px;top:16px;z-index:10000;padding:8px 12px;border-radius:999px;background:rgba(7,11,20,.76);border:1px solid var(--line);color:var(--muted);font-size:12px;backdrop-filter:blur(14px);display:none}.mapWrapFull .hint{display:block}
-    .glow{position:absolute;right:-120px;bottom:-140px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle, rgba(124,58,237,.24), transparent 65%);pointer-events:none;animation:pulse 7s ease-in-out infinite}.mapClose:active{transform:scale(.98)}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes pulse{0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.85}50%{transform:translate3d(-10px,-8px,0) scale(1.06);opacity:1}}
-    @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;scroll-behavior:auto !important}}
+    .socials{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px
+    }
+    @media (max-width:560px){.socials{grid-template-columns:1fr}}
+    a.social{
+      min-height:60px;
+      justify-content:space-between;
+      padding:14px;
+      border-radius:18px
+    }
+    .social .name{font-weight:900}
+    .social .desc{color:var(--soft);font-size:12px;margin-top:2px;font-weight:500}
+    .social .arrow{color:#c4b5fd;font-size:18px}
+    .progress{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      display:grid;
+      gap:8px
+    }
+    .progressTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap
+    }
+    .progressTop .label{font-weight:800}
+    .progressTop .value{color:var(--muted);font-size:13px}
+    .bar{
+      width:100%;
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08)
+    }
+    .bar>i{
+      display:block;
+      height:100%;
+      width:48%;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--accent),var(--accent3),var(--accent2));
+      transition:width .3s ease
+    }
+    .sticky{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:12px;
+      width:min(1040px,calc(100% - 24px));
+      margin:0 auto;
+      display:flex;
+      gap:10px;
+      padding:10px;
+      border-radius:20px;
+      background:rgba(7,11,20,.80);
+      border:1px solid var(--line);
+      backdrop-filter:blur(14px);
+      box-shadow:0 10px 35px rgba(0,0,0,.32);
+      z-index:20;
+      justify-content:center
+    }
+    .sticky a{
+      flex:1 1 0;
+      min-width:0;
+      min-height:46px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:14px;
+      font-weight:900
+    }
+    .sticky .primary{
+      background:linear-gradient(135deg,var(--accent),var(--accent3));
+      border-color:transparent
+    }
+    .sticky .donat{background:rgba(255,255,255,.06)}
+    @media (prefers-reduced-motion: reduce){
+      *{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+    }
   </style>
 </head>
 <body>
   <main class="shell">
     <section class="hero">
-      <div class="glow"></div>
       <div class="inner">
         <div class="topbar">
           <div class="chip"><span class="dot"></span> Путь, видео и живая история каждый день</div>
           <div class="chip" id="routeChip"></div>
         </div>
+
         <div class="grid">
           <section class="panel left">
             <div class="eyebrow">Идущий в закат.</div>
             <h1 id="title"></h1>
             <p class="lead" id="intro1"></p>
             <p class="lead" id="intro2"></p>
+
             <div class="mapCard" id="mapCard">
               <div class="mapHead">
                 <div class="mapTitle">Карта пути</div>
                 <div class="mapSub" id="mapSub"></div>
               </div>
-              <div style="position:relative">
-                <button class="mapClose" id="mapClose" type="button" aria-label="Закрыть карту">×</button>
-                <div id="map" class="mapFrame"></div>
-              </div>
+              <div id="map" class="mapFrame"></div>
             </div>
           </section>
+
           <aside class="panel right">
-            <div class="supportHead"><h2>Поддержать приключение</h2><span>Быстро и удобно с телефона</span></div>
+            <div class="supportHead">
+              <h2>Поддержать приключение</h2>
+              <span>Быстро и удобно с телефона</span>
+            </div>
+
             <div class="supportCard" id="supportBlock">
               <div class="phone" id="phone"></div>
               <div class="bank" id="bank"></div>
-              <div class="row"><button class="copy copyFull" id="copyBtn" type="button">Скопировать номер</button></div>
+              <div class="row">
+                <button class="copy copyFull" id="copyBtn" type="button">Скопировать номер</button>
+              </div>
             </div>
+
             <div class="progress">
-              <div class="progressTop"><div class="label">Прогресс пути</div><div class="value" id="progressText"></div></div>
+              <div class="progressTop">
+                <div class="label">Прогресс пути</div>
+                <div class="value" id="progressText"></div>
+              </div>
               <div class="bar"><i id="progressFill"></i></div>
               <div class="value" id="progressNote"></div>
             </div>
+
             <div class="socials">
-              <a class="social wide" id="tg" href="#" target="_blank" rel="noopener noreferrer"><div><div class="name">Telegram</div><div class="desc">Канал и связь</div></div><div class="arrow">↗</div></a>
-              <a class="social" id="ig" href="#" target="_blank" rel="noopener noreferrer"><div><div class="name">Инста</div><div class="desc">Сторис и фото</div></div><div class="arrow">↗</div></a>
-              <a class="social" id="max" href="#" target="_blank" rel="noopener noreferrer"><div><div class="name">Max</div><div class="desc">Новости</div></div><div class="arrow">↗</div></a>
-              <a class="social" id="yt" href="#" target="_blank" rel="noopener noreferrer"><div><div class="name">YouTube</div><div class="desc">Видео</div></div><div class="arrow">↗</div></a>
-              <a class="social wide" id="vk" href="#" target="_blank" rel="noopener noreferrer"><div><div class="name">Вконтакте</div><div class="desc">Сообщество</div></div><div class="arrow">↗</div></a>
+              <a class="social wide" id="tg" href="#" target="_blank" rel="noopener noreferrer">
+                <div><div class="name">Telegram</div><div class="desc">Канал и связь</div></div>
+                <div class="arrow">↗</div>
+              </a>
+              <a class="social" id="ig" href="#" target="_blank" rel="noopener noreferrer">
+                <div><div class="name">Инста</div><div class="desc">Сторис и фото</div></div>
+                <div class="arrow">↗</div>
+              </a>
+              <a class="social" id="max" href="#" target="_blank" rel="noopener noreferrer">
+                <div><div class="name">Max</div><div class="desc">Новости</div></div>
+                <div class="arrow">↗</div>
+              </a>
+              <a class="social" id="yt" href="#" target="_blank" rel="noopener noreferrer">
+                <div><div class="name">YouTube</div><div class="desc">Видео</div></div>
+                <div class="arrow">↗</div>
+              </a>
+              <a class="social wide" id="vk" href="#" target="_blank" rel="noopener noreferrer">
+                <div><div class="name">Вконтакте</div><div class="desc">Сообщество</div></div>
+                <div class="arrow">↗</div>
+              </a>
             </div>
           </aside>
         </div>
@@ -109,7 +351,7 @@
 
   <div class="sticky" id="stickyPanel">
     <a class="primary centered" id="stickyTg" href="#" target="_blank" rel="noopener noreferrer">Телеграм</a>
-    <a class="donat" href="#supportBlock">Донат</a>
+    <a class="donat" href="https://pay.cloudtips.ru/p/6ee28d2f" target="_blank" rel="noopener noreferrer">Донат</a>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -126,7 +368,7 @@
       progressTotal: 5000,
       progressNote: 'Размял ноги!',
       currentCoords: '55.035418, 73.804138',
-      currentPlace: 'Пять шагов до Омска'',
+      currentPlace: 'Пять шагов до Омска',
       mapZoom: 7,
       mapUrlLabel: 'Сейчас я:',
       instagram: 'https://www.instagram.com/max_with.axe?igsh=bzR3ZjUxeHVjM3o2',
@@ -172,7 +414,6 @@
     document.getElementById('tg').href = data.telegram;
     document.getElementById('stickyTg').href = data.telegram;
 
-    const mapCard = document.getElementById('mapCard');
     const map = L.map('map', {
       scrollWheelZoom: false,
       doubleClickZoom: false,
@@ -183,8 +424,8 @@
       boxZoom: false,
       keyboard: true,
       dragging: true,
-      zoomAnimation: true,
-      markerZoomAnimation: true,
+      zoomAnimation: false,
+      markerZoomAnimation: false,
       inertia: true,
       worldCopyJump: false,
       closePopupOnClick: false,
@@ -193,7 +434,6 @@
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      subdomains: 'abc',
       crossOrigin: true
     }).addTo(map);
 
@@ -207,59 +447,6 @@
     resizeMap();
     window.addEventListener('resize', () => resizeMap(), { passive:true });
 
-    function toggleFullscreen(){
-      const isFull = mapCard.classList.contains('mapWrapFull');
-      if (isFull) {
-        mapCard.classList.remove('mapWrapFull');
-        document.body.style.overflow = '';
-        if (document.fullscreenElement && document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
-        }
-      } else {
-        mapCard.classList.add('mapWrapFull');
-        document.body.style.overflow = 'hidden';
-        if (mapCard.requestFullscreen) {
-          mapCard.requestFullscreen().catch(() => {});
-        }
-      }
-      setTimeout(() => {
-        resizeMap();
-        setTimeout(resizeMap, 120);
-      }, 50);
-    }
-
-    mapCard.addEventListener('dblclick', (e) => {
-      e.preventDefault();
-      toggleFullscreen();
-    });
-
-    let lastTap = 0;
-    mapCard.addEventListener('touchend', (e) => {
-      const now = Date.now();
-      if (now - lastTap < 300) {
-        e.preventDefault();
-        toggleFullscreen();
-      }
-      lastTap = now;
-    }, { passive:false });
-
-    document.getElementById('mapClose').addEventListener('click', toggleFullscreen);
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && mapCard.classList.contains('mapWrapFull')) toggleFullscreen();
-    });
-
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement && mapCard.classList.contains('mapWrapFull')) {
-        mapCard.classList.remove('mapWrapFull');
-        document.body.style.overflow = '';
-        setTimeout(() => {
-          resizeMap();
-          setTimeout(resizeMap, 120);
-        }, 50);
-      }
-    });
-
     function setMapPoint(coordsString, place){
       const c = parseCoords(coordsString);
       if (!c) return false;
@@ -267,12 +454,9 @@
       data.currentPlace = place;
       marker.setLatLng([c.lat, c.lng]);
       marker.setPopupContent(place);
-      map.setView([c.lat, c.lng], data.mapZoom, { animate:true });
+      map.setView([c.lat, c.lng], data.mapZoom, { animate:false });
       setText('mapSub', `${data.mapUrlLabel}: ${place} · ${c.lat.toFixed(5)}, ${c.lng.toFixed(5)}`);
-      setTimeout(() => {
-        resizeMap();
-        setTimeout(resizeMap, 120);
-      }, 50);
+      setTimeout(() => resizeMap(), 50);
       return true;
     }
 
@@ -305,15 +489,6 @@
     }
 
     document.getElementById('copyBtn').addEventListener('click', copyPhone);
-
-    const hero = document.querySelector('.hero');
-    const glow = document.querySelector('.glow');
-    window.addEventListener('mousemove', (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 14;
-      const y = (e.clientY / window.innerHeight - 0.5) * 14;
-      hero.style.transform = `translate3d(${x * 0.08}px, ${y * 0.08}px, 0)`;
-      glow.style.transform = `translate3d(${x * -0.18}px, ${y * -0.18}px, 0) scale(1.02)`;
-    }, { passive:true });
 
     const sticky = document.getElementById('stickyPanel');
     let lastScrollY = window.scrollY;
