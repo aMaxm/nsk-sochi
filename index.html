@@ -434,7 +434,7 @@
       scrollWheelZoom:false,
       doubleClickZoom:false,
       zoomControl:true,
-      attributionControl:true,
+      attributionControl:false,
       tap:false,
       touchZoom:true,
       boxZoom:false,
@@ -450,8 +450,7 @@
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom:19,
-      crossOrigin:true,
-      attribution:'© OpenStreetMap'
+      crossOrigin:true
     }).addTo(map);
 
     const marker = L.marker([coords.lat, coords.lng])
