@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#060912">
+<meta name="description" content="Пешее путешествие из Новосибирска в Сочи. Самая актуальная информация — в Instagram.">
+<title>Новосибирск — Сочи пешком</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+:root{
+  --bg:#060912;
+  --bg2:#0f172a;
+  --line:rgba(255,255,255,.10);
+  --text:#f8fafc;
+  --muted:#cbd5e1;
+  --soft:#94a3b8;
+  --accent:#8b5cf6;
+  --accent3:#38bdf8;
+  --shadow:0 24px 80px rgba(0,0,0,.45);
+}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:20px;
+}
+body{
+  margin:0;
+  padding:max(10px,env(safe-area-inset-top)) 10px calc(88px + env(safe-area-inset-bottom));
+  min-height:100vh;
+  overflow-x:hidden;
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%,rgba(139,92,246,.25),transparent 18%),
+    radial-gradient(circle at 90% 12%,rgba(56,189,248,.14),transparent 16%),
+    radial-gradient(circle at 50% 100%,rgba(34,197,94,.12),transparent 20%),
+    linear-gradient(135deg,var(--bg),var(--bg2));
+}
+.shell{
+  width:min(900px,100%);
+  margin:auto;
+}
+.hero{
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
+  box-shadow:var(--shadow);
+}
+.inner{
+  padding:12px;
+}
+.header{
+  padding:8px 4px 16px;
+  text-align:center;
+}
+.day{
+  margin-top:9px;
+  color:#c4b5fd;
+  font-size:14px;
+  font-weight:900;
+}
+h1{
+  margin:0;
+  font-size:clamp(28px,7vw,50px);
+  line-height:1.03;
+  letter-spacing:-.055em;
+  font-weight:900;
+}
+.subtitle{
+  max-width:620px;
+  margin:10px auto 0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+}
+.journey{
+  display:inline-flex;
+  margin-top:10px;
+  padding:7px 11px;
+  border:1px solid rgba(139,92,246,.3);
+  border-radius:999px;
+  background:rgba(139,92,246,.1);
+  color:#ddd6fe;
+  font-size:11px;
+  font-weight:800;
+}
+.mainInstagram{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+  min-height:72px;
+  padding:14px;
+  border:1px solid rgba(139,92,246,.35);
+  border-radius:18px;
+  background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(56,189,248,.1));
+  color:var(--text);
+  text-decoration:none;
+  transition:transform .15s,background .15s;
+}
+.mainInstagram:active{
+  transform:scale(.985);
+}
+.instaIcon{
+  display:grid;
+  place-items:center;
+  width:42px;
+  height:42px;
+  flex:0 0 42px;
+  border-radius:13px;
+  background:rgba(255,255,255,.1);
+  font-size:22px;
+}
+.instaText{
+  min-width:0;
+  flex:1;
+  text-align:left;
+}
+.instaTitle{
+  font-size:15px;
+  font-weight:900;
+}
+.instaDesc{
+  margin-top:3px;
+  color:#ddd6fe;
+  font-size:11px;
+}
+.instaArrow{
+  color:#ddd6fe;
+  font-size:21px;
+}
+.card{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(255,255,255,.035);
+}
+.sectionTitle{
+  margin:0 0 10px;
+  font-size:18px;
+  font-weight:900;
+}
+.sectionHint{
+  margin:-3px 0 10px;
+  color:var(--soft);
+  font-size:11px;
+}
+.mapHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+}
+.mapTitle{
+  font-weight:900;
+}
+.mapSub{
+  color:var(--soft);
+  font-size:10px;
+  text-align:right;
+  line-height:1.4;
+}
+.mapFrame{
+  width:100%;
+  height:230px;
+  margin-top:9px;
+  overflow:hidden;
+  border-radius:14px;
+  background:#dfe7ef;
+}
+.supportBlock{
+  border-color:rgba(34,197,94,.22);
+  background:linear-gradient(180deg,rgba(34,197,94,.1),rgba(255,255,255,.035));
+}
+.supportTitle{
+  margin:0;
+  font-size:18px;
+  font-weight:900;
+}
+.supportHint{
+  color:var(--soft);
+  font-size:11px;
+  line-height:1.4;
+}
+.paymentBlock{
+  display:grid;
+  gap:7px;
+  margin-top:9px;
+  padding:11px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:15px;
+  background:rgba(0,0,0,.15);
+}
+.paymentLabel{
+  color:var(--soft);
+  font-size:11px;
+  font-weight:700;
+}
+.phone,
+.cardNumber{
+  font-weight:900;
+  line-height:1.1;
+  word-break:break-word;
+}
+.phone{
+  font-size:24px;
+}
+.cardNumber{
+  font-size:22px;
+  letter-spacing:1px;
+  font-variant-numeric:tabular-nums;
+}
+.bank{
+  color:var(--muted);
+  font-size:11px;
+}
+button.copy,
+.donatButton,
+.social{
+  appearance:none;
+  -webkit-appearance:none;
+  width:100%;
+  min-height:47px;
+  padding:11px 13px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:rgba(255,255,255,.075);
+  color:var(--text);
+  font:inherit;
+  font-size:13px;
+  font-weight:850;
+  text-decoration:none;
+  cursor:pointer;
+  transition:transform .15s,background .15s;
+}
+button.copy:active,
+.donatButton:active,
+.social:active{
+  transform:scale(.985);
+}
+.donatButton{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:52px;
+  margin-top:9px;
+  border-color:transparent;
+  background:linear-gradient(135deg,var(--accent),var(--accent3));
+  font-size:14px;
+}
+.socials{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.social{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:57px;
+  text-align:left;
+}
+.socialText{
+  min-width:0;
+}
+.socialName{
+  font-weight:900;
+}
+.socialDesc{
+  margin-top:2px;
+  color:var(--soft);
+  font-size:10px;
+}
+.socialArrow{
+  color:#c4b5fd;
+  font-size:17px;
+}
+.sticky{
+  position:fixed;
+  left:10px;
+  right:10px;
+  bottom:max(9px,env(safe-area-inset-bottom));
+  z-index:1000;
+  display:flex;
+  gap:7px;
+  width:min(900px,calc(100% - 20px));
+  margin:auto;
+  padding:7px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:17px;
+  background:rgba(7,11,20,.84);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 10px 35px rgba(0,0,0,.38);
+  transition:transform .22s,opacity .22s;
+}
+.sticky.is-hidden{
+  transform:translateY(calc(100% + 24px));
+  opacity:0;
+  pointer-events:none;
+}
+.sticky a{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:1;
+  min-height:45px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--text);
+  background:rgba(255,255,255,.07);
+  text-decoration:none;
+  font-size:12px;
+  font-weight:900;
+}
+.sticky .primary{
+  border-color:transparent;
+  background:linear-gradient(135deg,var(--accent),var(--accent3));
+}
+@media(max-width:560px){
+  .socials{grid-template-columns:1fr}
+  .mapSub{
+    width:100%;
+    margin-top:2px;
+    text-align:left;
+  }
+  .mapHead{flex-direction:column}
+}
+@media(max-width:360px){
+  h1{font-size:27px}
+  .instaDesc{display:none}
+  .cardNumber{font-size:19px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,
+  *::before,
+  *::after{
+    animation:none!important;
+    transition:none!important;
+    scroll-behavior:auto!important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="shell">
+<section class="hero">
+<div class="inner">
+
+<header class="header">
+
+  <h1>Иду пешком из Новосибирска в Сочи</h1>
+
+  <div class="day" id="day"></div>
+
+  <div class="subtitle">
+    5000+ км пешком через Россию.<br>
+    Следи за путешествием и смотри, где я сейчас.
+  </div>
+
+  <div class="journey">
+    🚶 Сейчас в пути
+  </div>
+
+</header>
+
+<a
+  class="mainInstagram"
+  id="mainInstagram"
+  href="#"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <div class="instaIcon">◎</div>
+  <div class="instaText">
+    <div class="instaTitle">Instagram — мой основной канал</div>
+    <div class="instaDesc">Самая актуальная информация о путешествии здесь</div>
+  </div>
+  <div class="instaArrow">↗</div>
+</a>
+
+<section class="card" id="mapBlock">
+
+  <div class="mapHead">
+
+    <div class="mapTitle">
+      📍 Где я сейчас
+    </div>
+
+    <div class="mapSub" id="mapSub"></div>
+
+  </div>
+
+  <div id="map" class="mapFrame"></div>
+
+</section>
+
+<section class="card supportBlock" id="supportBlock">
+
+  <h2 class="supportTitle">
+    Поддержать путешествие ❤️
+  </h2>
+
+  <div class="supportHint">
+    Можно перевести по номеру телефона или прямо на карту.
+  </div>
+
+  <div class="paymentBlock">
+
+    <div class="paymentLabel">
+      Перевод по номеру телефона
+    </div>
+
+    <div class="phone" id="phone"></div>
+
+    <div class="bank" id="bank"></div>
+
+    <button class="copy" id="copyBtn" type="button">
+      📋 Скопировать номер
+    </button>
+
+  </div>
+
+  <div class="paymentBlock">
+
+    <div class="paymentLabel">
+      Карта Альфа-Банк
+    </div>
+
+    <div class="cardNumber" id="cardNumber"></div>
+
+    <button class="copy" id="copyCardBtn" type="button">
+      📋 Скопировать номер карты
+    </button>
+
+  </div>
+
+  <a
+    class="donatButton"
+    href="https://pay.cloudtips.ru/p/6ee28d2f"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    ❤️ Донат через сайт
+  </a>
+
+</section>
+
+<section class="card" id="socialBlock">
+
+  <h2 class="sectionTitle">
+    Мои социальные сети
+  </h2>
+
+  <div class="sectionHint">
+    Instagram — основной и самый актуальный канал.
+  </div>
+
+  <div class="socials">
+
+    <a class="social" id="ig" href="#" target="_blank" rel="noopener noreferrer">
+      <div class="socialText">
+        <div class="socialName">Instagram ⭐</div>
+        <div class="socialDesc">Самая актуальная информация</div>
+      </div>
+      <div class="socialArrow">↗</div>
+    </a>
+
+    <a class="social" id="tg" href="#" target="_blank" rel="noopener noreferrer">
+      <div class="socialText">
+        <div class="socialName">Telegram</div>
+        <div class="socialDesc">Канал и связь</div>
+      </div>
+      <div class="socialArrow">↗</div>
+    </a>
+
+    <a class="social" id="max" href="#" target="_blank" rel="noopener noreferrer">
+      <div class="socialText">
+        <div class="socialName">Max</div>
+        <div class="socialDesc">Новости</div>
+      </div>
+      <div class="socialArrow">↗</div>
+    </a>
+
+    <a class="social" id="yt" href="#" target="_blank" rel="noopener noreferrer">
+      <div class="socialText">
+        <div class="socialName">YouTube</div>
+        <div class="socialDesc">Видео</div>
+      </div>
+      <div class="socialArrow">↗</div>
+    </a>
+
+    <a class="social" id="vk" href="#" target="_blank" rel="noopener noreferrer">
+      <div class="socialText">
+        <div class="socialName">ВКонтакте</div>
+        <div class="socialDesc">Сообщество</div>
+      </div>
+      <div class="socialArrow">↗</div>
+    </a>
+
+  </div>
+</section>
+
+</div>
+</section>
+</main>
+
+<div class="sticky" id="stickyPanel">
+
+  <a
+    class="primary"
+    id="stickyInstagram"
+    href="#"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    📸 Instagram
+  </a>
+
+  <a href="#supportBlock">
+    ❤️ Поддержать
+  </a>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="config.js"></script>
+
+<script>
+const DATA={
+  phone:'+7 903 999-37-78',
+  tel:'+79039993778',
+  bank:'Тинькофф или Альфа-Банк',
+  cardNumber:'2200153779038224',
+  instagram:'https://www.instagram.com/max_with.axe?igsh=bzR3ZjUxeHVjM3o2',
+  telegram:'https://t.me/kotikilapkami',
+  max:'https://max.ru/channel_kotovput',
+  youtube:'https://youtube.com/@kotikilapkami?si=5LbQ4_q9oEJFHt6m',
+  vk:'https://vk.ru/club239438129',
+  donat:'https://pay.cloudtips.ru/p/6ee28d2f'
+};
+
+const $=id=>document.getElementById(id);
+const setText=(id,value)=>{
+  const el=$(id);
+  if(el)el.textContent=value;
+};
+
+/* ЕЖЕДНЕВНЫЕ ДАННЫЕ ИЗ config.js */
+
+setText('day',`День ${CONFIG.day} — ${CONFIG.title}`);
+
+setText('phone',DATA.phone);
+setText('bank',DATA.bank);
+
+setText(
+  'cardNumber',
+  DATA.cardNumber.replace(/(.{4})/g,'$1 ').trim()
+);
+
+/* ССЫЛКИ */
+
+$('mainInstagram').href=DATA.instagram;
+$('stickyInstagram').href=DATA.instagram;
+$('ig').href=DATA.instagram;
+$('tg').href=DATA.telegram;
+$('max').href=DATA.max;
+$('yt').href=DATA.youtube;
+$('vk').href=DATA.vk;
+$('supportBlock').querySelector('.donatButton').href=DATA.donat;
+
+/* КООРДИНАТЫ */
+
+function parseCoords(value){
+  const parts=String(value).split(',').map(x=>x.trim());
+  if(parts.length!==2)return null;
+
+  const lat=Number(parts[0]);
+  const lng=Number(parts[1]);
+
+  if(
+    !Number.isFinite(lat)||
+    !Number.isFinite(lng)||
+    lat<-90||lat>90||
+    lng<-180||lng>180
+  )return null;
+
+  return{lat,lng};
+}
+
+const coords=parseCoords(CONFIG.coords);
+
+if(!coords){
+  throw new Error('Неверные координаты в config.js');
+}
+
+setText(
+  'mapSub',
+  `${CONFIG.place} · ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`
+);
+
+/* MAP */
+
+const map=L.map('map',{
+  scrollWheelZoom:false,
+  doubleClickZoom:false,
+  zoomControl:true,
+  attributionControl:true,
+  touchZoom:true,
+  boxZoom:false,
+  keyboard:true,
+  dragging:true,
+  zoomAnimation:false,
+  markerZoomAnimation:false,
+  inertia:true,
+  worldCopyJump:false
+}).setView(
+  [coords.lat,coords.lng],
+  9
+);
+
+L.tileLayer(
+  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    maxZoom:19,
+    crossOrigin:true
+  }
+).addTo(map);
+
+const marker=L.marker([
+  coords.lat,
+  coords.lng
+])
+.addTo(map)
+.bindPopup(CONFIG.place);
+
+marker.openPopup();
+
+function resizeMap(){
+  requestAnimationFrame(()=>map.invalidateSize());
+}
+
+resizeMap();
+
+window.addEventListener(
+  'resize',
+  resizeMap,
+  {passive:true}
+);
+
+/* БЫСТРАЯ СМЕНА ТОЧКИ */
+
+window.setMapPoint=function(coordsString,place){
+
+  const point=parseCoords(coordsString);
+
+  if(!point)return false;
+
+  marker.setLatLng([
+    point.lat,
+    point.lng
+  ]);
+
+  marker.setPopupContent(place);
+
+  map.setView(
+    [point.lat,point.lng],
+    9,
+    {animate:false}
+  );
+
+  setText(
+    'mapSub',
+    `${place} · ${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`
+  );
+
+  setTimeout(resizeMap,50);
+
+  return true;
+};
+
+/* КОПИРОВАНИЕ */
+
+async function copyText(text,button,success){
+
+  const old=button.textContent;
+
+  try{
+
+    if(navigator.clipboard&&window.isSecureContext){
+
+      await navigator.clipboard.writeText(text);
+
+    }else{
+
+      const input=document.createElement('input');
+
+      input.value=text;
+      input.style.position='fixed';
+      input.style.opacity='0';
+
+      document.body.appendChild(input);
+
+      input.select();
+      document.execCommand('copy');
+      input.remove();
+
+    }
+
+    button.textContent=success;
+
+    setTimeout(
+      ()=>button.textContent=old,
+      1400
+    );
+
+  }catch(e){
+
+    button.textContent='Не удалось скопировать';
+
+    setTimeout(
+      ()=>button.textContent=old,
+      1600
+    );
+
+  }
+}
+
+$('copyBtn').onclick=()=>copyText(
+  DATA.tel,
+  $('copyBtn'),
+  '✓ Номер скопирован'
+);
+
+$('copyCardBtn').onclick=()=>copyText(
+  DATA.cardNumber,
+  $('copyCardBtn'),
+  '✓ Карта скопирована'
+);
+
+/* STICKY */
+
+const sticky=$('stickyPanel');
+
+let lastScrollY=window.scrollY;
+let ticking=false;
+let hidden=false;
+
+function updateSticky(){
+
+  const current=window.scrollY;
+  const delta=current-lastScrollY;
+
+  if(current<80){
+
+    sticky.classList.remove('is-hidden');
+    hidden=false;
+
+  }else if(delta>6&&!hidden){
+
+    sticky.classList.add('is-hidden');
+    hidden=true;
+
+  }else if(delta<-6&&hidden){
+
+    sticky.classList.remove('is-hidden');
+    hidden=false;
+
+  }
+
+  lastScrollY=current;
+  ticking=false;
+}
+
+window.addEventListener(
+  'scroll',
+  ()=>{
+
+    if(!ticking){
+
+      requestAnimationFrame(updateSticky);
+      ticking=true;
+
+    }
+
+  },
+  {passive:true}
+);
+</script>
+
+</body>
+</html>
