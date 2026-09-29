@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0d10">
+<title>Новосибирск — Сочи пешком</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#0b0d10;color:#f4f4f4;font:16px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(920px,100%);margin:auto;padding:0 16px}
+header{padding:34px 0 22px;text-align:center}
+.day{font-size:18px;font-weight:700;color:#ff9d42;margin-bottom:7px}
+h1{font-size:clamp(28px,7vw,46px);line-height:1.05;margin:0;font-weight:800}
+.subtitle{margin:12px 0 0;color:#aaa;font-size:15px}
+.hero{margin:12px 0 18px}
+.hero img{display:block;width:100%;height:auto;border-radius:20px}
+.card{background:#13171c;border:1px solid #20262d;border-radius:18px;padding:20px;margin:14px 0}
+.card h2{font-size:21px;margin:0 0 12px}
+.route{display:flex;justify-content:space-between;gap:12px;text-align:center;margin:18px 0}
+.route b{font-size:15px}
+.route span{display:block;color:#8d959d;font-size:13px;margin-top:3px}
+#map{height:330px;border-radius:14px;overflow:hidden}
+.info{color:#aeb5bc;font-size:14px}
+.copyrow{display:flex;gap:8px;align-items:center;margin:9px 0;flex-wrap:wrap}
+.value{font-weight:650;word-break:break-word}
+button,.btn{border:0;border-radius:10px;background:#252c34;color:#fff;padding:10px 13px;font:inherit;cursor:pointer}
+button:active,.btn:active{transform:scale(.98)}
+.support{background:linear-gradient(145deg,#171c22,#111418)}
+.support .main{font-size:20px;font-weight:800;margin-bottom:5px}
+.social{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.social a{padding:13px;border-radius:12px;background:#1a1f25;text-align:center;font-weight:650}
+.primary{background:#ff7a00!important}
+footer{text-align:center;color:#747b82;font-size:13px;padding:25px 0 95px}
+.bottom{position:fixed;z-index:999;bottom:10px;left:10px;right:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;background:#15191eeb;border:1px solid #292f36;border-radius:16px;backdrop-filter:blur(12px)}
+.bottom a{text-align:center;padding:11px;border-radius:10px;font-weight:750}
+@media(max-width:600px){
+  .wrap{padding:0 12px}
+  header{padding-top:25px}
+  .hero img{border-radius:15px}
+  .card{padding:16px;border-radius:15px}
+  #map{height:230px}
+  .route{margin:14px 0}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header>
+  <div class="day" id="day"></div>
+  <h1>Иду пешком из Новосибирска в Сочи</h1>
+  <div class="subtitle" id="journeyTitle"></div>
+</header>
+
+<section class="hero">
+  <img src="hero.jpg" alt="Новосибирск — Сочи пешком" loading="eager">
+</section>
+
+<section class="card">
+  <div class="route">
+    <div><b>Новосибирск</b><span>старт</span></div>
+    <div><b>5000+ км</b><span>пешком</span></div>
+    <div><b>Сочи</b><span>цель</span></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>📍 Где я сейчас</h2>
+  <div class="info" id="place"></div>
+  <div id="map"></div>
+</section>
+
+<section class="card support">
+  <div class="main">❤️ Поддержать путешествие</div>
+  <div class="info">Если хочешь помочь мне идти дальше — можно поддержать напрямую.</div>
+
+  <div class="copyrow">
+    <span class="value">+7 903 999-37-78</span>
+    <button onclick="copyText('+79039993778',this)">Копировать</button>
+  </div>
+
+  <div class="info">Тинькофф или Альфа-Банк</div>
+
+  <div class="copyrow">
+    <span class="value">2200 1537 7903 8224</span>
+    <button onclick="copyText('2200153779038224',this)">Копировать</button>
+  </div>
+
+  <a class="btn primary" href="https://pay.cloudtips.ru/p/6ee28d2f" target="_blank" rel="noopener">
+    Поддержать через CloudTips
+  </a>
+</section>
+
+<section class="card">
+  <h2>Мои соцсети</h2>
+  <div class="social">
+    <a class="primary" href="https://www.instagram.com/max_with.axe?igsh=bzR3ZjUxeHVjM3o2" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://t.me/kotikilapkami" target="_blank" rel="noopener">Telegram</a>
+    <a href="https://max.ru/channel_kotovput" target="_blank" rel="noopener">MAX</a>
+    <a href="https://youtube.com/@kotikilapkami?si=5LbQ4_q9oEJFHt6m" target="_blank" rel="noopener">YouTube</a>
+    <a href="https://vk.ru/club239438129" target="_blank" rel="noopener">VK</a>
+  </div>
+</section>
+
+<footer>
+  Новосибирск → Сочи пешком · 5000+ км
+</footer>
+
+</div>
+
+<div class="bottom">
+  <a class="primary" href="https://www.instagram.com/max_with.axe?igsh=bzR3ZjUxeHVjM3o2" target="_blank" rel="noopener">Instagram</a>
+  <a href="https://pay.cloudtips.ru/p/6ee28d2f" target="_blank" rel="noopener">Поддержать</a>
+</div>
+
+<script src="config.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+
+$('day').textContent='День '+CONFIG.day;
+$('journeyTitle').textContent='— '+CONFIG.title;
+$('place').textContent=CONFIG.place+' · '+CONFIG.coords;
+
+function copyText(text,btn){
+  navigator.clipboard.writeText(text);
+  const old=btn.textContent;
+  btn.textContent='Скопировано';
+  setTimeout(()=>btn.textContent=old,1200);
+}
+
+const [lat,lng]=CONFIG.coords.split(',').map(Number);
+const map=L.map('map',{zoomControl:false}).setView([lat,lng],9);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap'
+}).addTo(map);
+
+L.marker([lat,lng]).addTo(map)
+  .bindPopup('<b>Я здесь</b><br>'+CONFIG.place)
+  .openPopup();
+</script>
+</body>
+</html>
