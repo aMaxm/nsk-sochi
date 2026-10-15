@@ -10,7 +10,7 @@ const CONFIG = {
     const today = Date.UTC(+date.year, +date.month - 1, +date.day);
     return Math.floor((today - Date.UTC(2026, 5, 17)) / 86400000) + 1;
   })(),
-  title: "Город Аша",
-  coords: "54.985168, 57.26581",
-  place: "Аша"
+  title: "На границе Челябинской области и Башкортостана",
+  coords: "54.857065, 57.145103",
+  place: "Тут!:)"
 };
