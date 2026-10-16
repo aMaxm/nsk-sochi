@@ -11,6 +11,6 @@ const CONFIG = {
     return Math.floor((today - Date.UTC(2026, 5, 17)) / 86400000) + 1;
   })(),
   title: "В Башкортостане",
-  coords: "54.81683, 56.761492",
-  place: "Тут!:)"
+  coords: "54.818801, 56.711938",
+  place: "Тут!=)"
 };
