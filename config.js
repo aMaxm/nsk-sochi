@@ -10,7 +10,7 @@ const CONFIG = {
     const today = Date.UTC(+date.year, +date.month - 1, +date.day);
     return Math.floor((today - Date.UTC(2026, 5, 17)) / 86400000) + 1;
   })(),
-  title: "В полях Башкирии)",
+  title: "Языково",
   coords: "54.702002, 55.030282",
   place: "Тут!=)"
 };
