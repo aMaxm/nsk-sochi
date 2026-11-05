@@ -11,6 +11,6 @@ const CONFIG = {
     return Math.floor((today - Date.UTC(2026, 5, 17)) / 86400000) + 1;
   })(),
   title: "На подходе к Октябрьскому",
-  coords: "54.485865, 53.893499",
+  coords: "54.481617, 53.516683",
   place: "Вот он он!"
 };
