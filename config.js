@@ -10,7 +10,7 @@ const CONFIG = {
     const today = Date.UTC(+date.year, +date.month - 1, +date.day);
     return Math.floor((today - Date.UTC(2026, 5, 17)) / 86400000) + 1;
   })(),
-  title: "Татарстан",
-  coords: "54.472157, 53.304047",
+  title: "Оренбургская область",
+  coords: "54.262994, 52.898933",
   place: "Вот он он!"
 };
