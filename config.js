@@ -10,7 +10,7 @@ const CONFIG = {
     const today = Date.UTC(+date.year, +date.month - 1, +date.day);
     return Math.floor((today - Date.UTC(2026, 5, 17)) / 86400000) + 1;
   })(),
-  title: "Оренбургская область",
-  coords: "54.065077, 52.144476",
+  title: "Сергиевск",
+  coords: "53.942614, 51.163843",
   place: "Вот он он!"
 };
