@@ -10,7 +10,7 @@ const CONFIG = {
     const today = Date.UTC(+date.year, +date.month - 1, +date.day);
     return Math.floor((today - Date.UTC(2026, 5, 17)) / 86400000) + 1;
   })(),
-  title: "Лысая гора. Тут тренят параглайдеры",
-  coords: "53.77742, 50.663267",
+  title: "Алтай гора. Место ставки Тимура Тамерлана",
+  coords: "53.606155, 50.412397",
   place: "Вот он он!"
 };
