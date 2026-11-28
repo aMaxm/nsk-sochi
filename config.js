@@ -10,7 +10,7 @@ const CONFIG = {
     const today = Date.UTC(+date.year, +date.month - 1, +date.day);
     return Math.floor((today - Date.UTC(2026, 5, 17)) / 86400000) + 1;
   })(),
-  title: "Чапаевск",
-  coords: "52.914134, 49.698824",
+  title: "Дружба!",
+  coords: "52.643514, 49.365537",
   place: "Вот он он!"
 };
